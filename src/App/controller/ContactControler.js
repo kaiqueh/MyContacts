@@ -1,21 +1,23 @@
-class contactController{
+const repositories = require("../repositories/ContactRepository");
 
-index(req, res){
-res.send('Index. Hello World!🔥')
-}
+class contactController {
+    async index(req, res) {
+        const contacts =  await repositories.findall();
 
-show(req, res){
-res.send('Hello World!🔥')
-}
+        res.json(contacts);
+    }
 
-store(req, res){
-res.send('Hello World!🔥')
-}
+    show(req, res) {
+        res.send("Hello World!🔥");
+    }
 
-update(req, res){
-res.send('Hello World!🔥')
-}
+    store(req, res) {
+        res.send("Hello World!🔥");
+    }
 
+    update(req, res) {
+        res.send("Hello World!🔥");
+    }
 }
 
 module.exports = new contactController();
