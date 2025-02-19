@@ -24,16 +24,48 @@ class concatRepository {
         });
     }
     findbyId(id) {
-        return new Promise((resolve) => resolve(
-        contact.find((contact) => contact.id === id)
-        ));
+        return new Promise((resolve) =>
+            resolve(contact.find((contact) => contact.id === id))
+        );
     }
-    delete(id){
+    findByEmail(email) {
+        return new Promise((resolve) =>
+            resolve(contact.find((contact) => contact.email === email))
+        );
+    }
+    delete(id) {
         return new Promise((resolve) => {
-            contact = contact.filter((contact) => contact.id !== id)
-            resolve()
-    });
-
+            contact = contact.filter((contact) => contact.id !== id);
+            resolve();
+        });
+    }
+    createcontact({ name, email, phone, category_id }) {
+        return new Promise((resolve) => {
+            const newContact = {
+                id: uuid(),
+                name,
+                email,
+                phone,
+                category_id,
+            };
+            contact.push(newContact);
+            resolve();
+        });
+    }
+    updatecontact( id,{ name, email, phone, category_id }) {
+        return new Promise((resolve) => {
+            const newContact = {
+                id,
+                name,
+                email,
+                phone,
+                category_id,
+            };
+            contact = contact.map((contact) =>
+                contact.id === id ? newContact : contact
+            );
+            resolve(newContact);
+        });
     }
 }
 
