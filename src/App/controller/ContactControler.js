@@ -28,16 +28,18 @@ class contactController {
          return res.status(400).json({ error: "Email already exists" });
      }
 
-     const newconstact = {
-            name,
-            email,
-            phone,
-            category_id
-     }
+     if(!name){
+            return res.status(400).json({ error: "Name is required" });
+        }
 
-    await repositories.createcontact(newconstact);
+    const contact = await repositories.createcontact({
+        name,
+        email,
+        phone,
+        category_id,
+    });
 
-    res.sendStatus(201);
+    res.json(contact);
     }
 
     async update(req, res) {
@@ -50,6 +52,15 @@ class contactController {
             return res.status(404).json({ error: "Contact not found" });
         }
 
+        if(!name){
+            return res.status(400).json({error: "Name is required"})
+        }
+
+        const constactemail = await repositories.findByEmail(email);
+
+        if (constactemail && constactemail.id !== id) {
+            return res.status(400).json({ error: "Email already exists" });
+        }
 
         const contact = await repositories.updatecontact(id,{
             name,

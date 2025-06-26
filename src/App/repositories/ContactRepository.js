@@ -1,71 +1,35 @@
-const { uuid } = require("uuidv4");
-
-let contact = [
-    {
-        id: uuid(),
-        name: "kaique",
-        email: "kaique@ht.com",
-        phone: "11999999999",
-        category_id: uuid(),
-    },
-    {
-        id: uuid(),
-        name: "teste",
-        email: "teste@ht.com",
-        phone: "11999111999999",
-        category_id: uuid(),
-    },
-];
+const db = require("../../database");
 
 class concatRepository {
-    findall() {
-        return new Promise((resolve) => {
-            resolve(contact);
-        });
+    async findall() {
+        const rows = await db.Query("SELECT * FROM contacts");
+        return rows;
     }
-    findbyId(id) {
-        return new Promise((resolve) =>
-            resolve(contact.find((contact) => contact.id === id))
+    async findbyId(id) {
+       const [row] = await db.Query("SELECT * FROM contacts WHERE id = $1", [id]);
+        return row;
+    }
+    async findByEmail(email) {
+        const [row] = await db.Query("SELECT * FROM contacts WHERE id = $1", [email]);
+        return row;
+    }
+    async delete(id) {
+        const deleteOp = await db.Query("DELETE FROM contacts WHERE id = $1", [id]);
+        return deleteOp;
+    }
+    async createcontact({ name, email, phone, category_id }) {
+        const [row] = await db.Query(
+            `INSERT INTO contacts (name, email, phone, category_id) VALUES ($1 , $2, $3, $4) RETURNING *`,
+            [name, email, phone, category_id]
         );
+        return row;
     }
-    findByEmail(email) {
-        return new Promise((resolve) =>
-            resolve(contact.find((contact) => contact.email === email))
+    async updatecontact( id,{ name, email, phone, category_id }) {
+        const [row] = await db.Query(
+            `UPDATE contacts SET name = $1, email = $2, phone = $3, category_id = $4 WHERE id = $5 RETURNING *`,
+            [name, email, phone, category_id, id]
         );
-    }
-    delete(id) {
-        return new Promise((resolve) => {
-            contact = contact.filter((contact) => contact.id !== id);
-            resolve();
-        });
-    }
-    createcontact({ name, email, phone, category_id }) {
-        return new Promise((resolve) => {
-            const newContact = {
-                id: uuid(),
-                name,
-                email,
-                phone,
-                category_id,
-            };
-            contact.push(newContact);
-            resolve();
-        });
-    }
-    updatecontact( id,{ name, email, phone, category_id }) {
-        return new Promise((resolve) => {
-            const newContact = {
-                id,
-                name,
-                email,
-                phone,
-                category_id,
-            };
-            contact = contact.map((contact) =>
-                contact.id === id ? newContact : contact
-            );
-            resolve(newContact);
-        });
+        return row;
     }
 }
 
